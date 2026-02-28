@@ -1,0 +1,61 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+*.nupkg
+.dotnet/
+
+# EF Core migrations (keep source, ignore generated SQL)
+*.mdf
+*.ldf
+
+# User-specific secrets (never commit)
+appsettings.Development.json
+appsettings.Production.json
+secrets.json
+
+# Node.js / TypeScript
+node_modules/
+dist/
+.pnpm-store/
+*.tsbuildinfo
+
+# Vite build output
+apps/*/dist/
+apps/*/.vite/
+
+# TanStack Router generated
+apps/*/src/routeTree.gen.ts
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# IDE
+.idea/
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+lcov.info
+
+# Logs
+*.log
+logs/

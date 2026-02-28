@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AdvancedVocabApp.Api/AdvancedVocabApp.Api.csproj" />
+    <Project Path="src/AdvancedVocabApp.Core/AdvancedVocabApp.Core.csproj" />
+    <Project Path="src/AdvancedVocabApp.Infrastructure/AdvancedVocabApp.Infrastructure.csproj" />
+    <Project Path="src/AdvancedVocabApp.Tests/AdvancedVocabApp.Tests.csproj" />
+  </Folder>
+</Solution>
