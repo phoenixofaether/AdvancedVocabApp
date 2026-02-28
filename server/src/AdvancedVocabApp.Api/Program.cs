@@ -70,8 +70,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ISpacedRepetitionService, SpacedRepetitionService>();
 
-// HttpClient for external APIs (dictionary, TTS)
-builder.Services.AddHttpClient();
+// External API services
+builder.Services.AddHttpClient<IDictionaryService, FreeDictionaryService>();
 
 // Controllers
 builder.Services.AddControllers();

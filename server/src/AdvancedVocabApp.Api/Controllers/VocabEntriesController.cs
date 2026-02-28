@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using AdvancedVocabApp.Core.DTOs;
 using AdvancedVocabApp.Core.Entities;
+using AdvancedVocabApp.Core.Interfaces;
 using AdvancedVocabApp.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace AdvancedVocabApp.Api.Controllers;
 [ApiController]
 [Route("api/vocab-entries")]
 [Authorize]
-public class VocabEntriesController(AppDbContext db) : ControllerBase
+public class VocabEntriesController(AppDbContext db, IDictionaryService dictionaryService) : ControllerBase
 {
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<VocabEntryResponse>> GetById(Guid id, CancellationToken ct)
@@ -23,6 +24,18 @@ public class VocabEntriesController(AppDbContext db) : ControllerBase
             .FirstOrDefaultAsync(e => e.Id == id && e.CreatedByUserId == userId, ct);
 
         if (entry is null) return NotFound();
+
+        // Lazy-fetch dictionary data if missing (e.g. API was down at creation time)
+        if (entry.DictionaryData is null)
+        {
+            var dictData = await dictionaryService.LookupWordAsync(entry.Word, entry.Language, ct);
+            if (dictData is not null)
+            {
+                entry.DictionaryDataId = dictData.Id;
+                entry.DictionaryData = dictData;
+                await db.SaveChangesAsync(ct);
+            }
+        }
 
         return Ok(MapToResponse(entry));
     }
@@ -57,6 +70,15 @@ public class VocabEntriesController(AppDbContext db) : ControllerBase
         });
 
         await db.SaveChangesAsync(ct);
+
+        // Fetch dictionary data (uses cache if already known for this word)
+        var dictData = await dictionaryService.LookupWordAsync(entry.Word, entry.Language, ct);
+        if (dictData is not null)
+        {
+            entry.DictionaryDataId = dictData.Id;
+            entry.DictionaryData = dictData;
+            await db.SaveChangesAsync(ct);
+        }
 
         return CreatedAtAction(nameof(GetById), new { id = entry.Id }, MapToResponse(entry));
     }
