@@ -61,11 +61,12 @@ Goal: every time a user adds a word, its definition, IPA, example sentences, and
 
 ### Tasks
 
-- [ ] **1.1 — DictionaryService** (`AdvancedVocabApp.Infrastructure/Services/DictionaryService.cs`)
+- [x] **1.1 — DictionaryService** (`AdvancedVocabApp.Infrastructure/Services/FreeDictionaryService.cs`)
   - Implement `IDictionaryService.LookupWordAsync` using `HttpClient` against `api.dictionaryapi.dev`
   - Parse response: populate `DictionaryData` (word, language, phoneticText, audioUrl, RawJson) and `DictionaryMeaning` list
   - If the word is already in `DictionaryData` table (same word + language), reuse it — don't re-fetch
-  - Register `HttpClient` with base address and `DictionaryService` as scoped in `Program.cs`
+  - Concurrent insert race handled via `DbUpdateException` → re-fetch from DB
+  - Registered as typed `HttpClient<IDictionaryService, FreeDictionaryService>` in `Program.cs`
 
 - [ ] **1.2 — TextToSpeechService** (`AdvancedVocabApp.Infrastructure/Services/TextToSpeechService.cs`)
   - Implement `ITextToSpeechService.GetPronunciationUrlAsync` using Google Cloud TTS REST API
@@ -80,10 +81,14 @@ Goal: every time a user adds a word, its definition, IPA, example sentences, and
   - On `GET /api/vocab-entries/{id}`: if `DictionaryData` is null and word hasn't been retried recently, attempt lookup
   - Add `GET /api/vocab-entries/{id}/audio?voice={voiceName}` endpoint: returns TTS audio URL for the word
 
-- [ ] **1.4 — Review controller** (`ReviewController.cs`)
-  - `GET /api/review/due` — cards due today for current user (ordered by `NextReviewDate`)
-  - `POST /api/review/submit` — accepts `ReviewSubmitRequest`, calls `ISpacedRepetitionService.ProcessReview`, saves updated card + `ReviewHistory` row
-  - `GET /api/review/stats` — returns `ReviewStats` (dueToday, reviewedToday, totalCards, currentStreak)
+- [x] **1.3 — Wire DictionaryService into VocabEntriesController**
+  - `POST /api/vocab-entries`: saves entry + ReviewCard first, then calls `LookupWordAsync` and attaches result
+  - `GET /api/vocab-entries/{id}`: lazy-fetches dictionary data if `DictionaryData` is null (API may have been down at creation time)
+
+- [x] **1.4 — Review controller** (`ReviewController.cs`)
+  - `GET /api/review/due` — cards due now for current user (ordered by `NextReviewDate`)
+  - `POST /api/review/submit` — validates quality (1/3/4/5), calls SM-2, saves updated card + `ReviewHistory` row
+  - `GET /api/review/stats` — returns `ReviewStatsResponse` (dueToday, reviewedToday, totalCards, currentStreak)
 
 ### Verification
 

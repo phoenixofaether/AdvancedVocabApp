@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build server/src/AdvancedVocabApp.Api/)",
+      "Bash(dotnet test server/src/AdvancedVocabApp.Tests/)"
+    ]
+  }
+}
