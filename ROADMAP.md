@@ -68,18 +68,18 @@ Goal: every time a user adds a word, its definition, IPA, example sentences, and
   - Concurrent insert race handled via `DbUpdateException` → re-fetch from DB
   - Registered as typed `HttpClient<IDictionaryService, FreeDictionaryService>` in `Program.cs`
 
-- [ ] **1.2 — TextToSpeechService** (`AdvancedVocabApp.Infrastructure/Services/TextToSpeechService.cs`)
+- [x] **1.2 — TextToSpeechService** (`AdvancedVocabApp.Infrastructure/Services/TextToSpeechService.cs`)
   - Implement `ITextToSpeechService.GetPronunciationUrlAsync` using Google Cloud TTS REST API
   - Accept `voiceName` param (e.g. `"en-GB-Wavenet-A"`); fall back to `en-US-Wavenet-D` if null
   - Implement `GetAvailableVoicesAsync` returning the English WaveNet voice list
   - Cache generated audio in `AudioCache` table (key: `word + voiceName`) — return cached URL if hit
-  - Store audio as a GCS object URL (or base64 data-URI if GCS is not yet set up)
-  - Register in `Program.cs`
+  - Stored as base64 data-URI in `AudioCache.StoragePath` (GCS migration pending)
+  - Registered as typed `HttpClient<ITextToSpeechService, TextToSpeechService>` in `Program.cs`
 
-- [ ] **1.3 — Wire services into VocabEntriesController**
-  - On `POST /api/vocab-entries`: after saving the entry, call `DictionaryService.LookupWordAsync` and attach result
-  - On `GET /api/vocab-entries/{id}`: if `DictionaryData` is null and word hasn't been retried recently, attempt lookup
-  - Add `GET /api/vocab-entries/{id}/audio?voice={voiceName}` endpoint: returns TTS audio URL for the word
+- [x] **1.3 — Wire services into VocabEntriesController**
+  - On `POST /api/vocab-entries`: saves entry + ReviewCard, calls `LookupWordAsync` and attaches dictionary result
+  - On `GET /api/vocab-entries/{id}`: lazy-fetches dictionary data if `DictionaryData` is null
+  - `GET /api/vocab-entries/{id}/audio?voice={voiceName}` endpoint: returns TTS audio data-URI via `AudioUrlResponse`
 
 - [x] **1.3 — Wire DictionaryService into VocabEntriesController**
   - `POST /api/vocab-entries`: saves entry + ReviewCard first, then calls `LookupWordAsync` and attaches result

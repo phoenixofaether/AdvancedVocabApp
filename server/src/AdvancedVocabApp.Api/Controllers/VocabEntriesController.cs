@@ -12,7 +12,10 @@ namespace AdvancedVocabApp.Api.Controllers;
 [ApiController]
 [Route("api/vocab-entries")]
 [Authorize]
-public class VocabEntriesController(AppDbContext db, IDictionaryService dictionaryService) : ControllerBase
+public class VocabEntriesController(
+    AppDbContext db,
+    IDictionaryService dictionaryService,
+    ITextToSpeechService ttsService) : ControllerBase
 {
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<VocabEntryResponse>> GetById(Guid id, CancellationToken ct)
@@ -117,6 +120,24 @@ public class VocabEntriesController(AppDbContext db, IDictionaryService dictiona
         db.VocabEntries.Remove(entry);
         await db.SaveChangesAsync(ct);
         return NoContent();
+    }
+
+    [HttpGet("{id:guid}/audio")]
+    public async Task<ActionResult<AudioUrlResponse>> GetAudio(
+        Guid id,
+        [FromQuery] string? voice,
+        CancellationToken ct)
+    {
+        var userId = GetUserId();
+        var entry = await db.VocabEntries
+            .FirstOrDefaultAsync(e => e.Id == id && e.CreatedByUserId == userId, ct);
+
+        if (entry is null) return NotFound();
+
+        var url = await ttsService.GetPronunciationUrlAsync(entry.Word, entry.Language, voice, ct);
+        if (url is null) return NotFound("TTS audio is unavailable for this word.");
+
+        return Ok(new AudioUrlResponse(url));
     }
 
     private static VocabEntryResponse MapToResponse(VocabEntry entry) =>

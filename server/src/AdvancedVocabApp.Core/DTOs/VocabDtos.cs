@@ -44,3 +44,5 @@ public record DictionaryMeaningResponse(
     string? Example);
 
 public record AddEntriesToSetRequest(IReadOnlyList<Guid> EntryIds);
+
+public record AudioUrlResponse(string Url);
