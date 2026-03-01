@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useReviewDue, useSubmitReview } from "../../../api/review";
 import { useVocabEntry } from "../../../api/vocabEntries";
 import { useCurrentUser } from "../../../api/auth";
@@ -158,6 +158,13 @@ const ReviewPage = () => {
   const submitReview = useSubmitReview();
   const { data: user } = useCurrentUser();
 
+  // Snapshot cards on first load so a mid-session refetch can't shift indices
+  const sessionCardsRef = useRef<ReviewCard[] | null>(null);
+  if (!sessionCardsRef.current && dueCards && dueCards.length > 0) {
+    sessionCardsRef.current = [...dueCards];
+  }
+  const cards = sessionCardsRef.current ?? dueCards;
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [results, setResults] = useState<SessionResult[]>([]);
@@ -171,7 +178,7 @@ const ReviewPage = () => {
     );
   }
 
-  if (!dueCards || dueCards.length === 0) {
+  if (!cards || cards.length === 0) {
     return (
       <div className="text-center py-16 max-w-md mx-auto">
         <div className="text-5xl mb-4">✅</div>
@@ -233,7 +240,7 @@ const ReviewPage = () => {
     );
   }
 
-  const currentCard = dueCards[currentIndex];
+  const currentCard = cards?.[currentIndex];
 
   const handleRate = async (quality: 1 | 3 | 4 | 5) => {
     await submitReview.mutateAsync({
@@ -241,7 +248,7 @@ const ReviewPage = () => {
       quality,
     });
     setResults((prev) => [...prev, { cardId: currentCard.id, quality }]);
-    if (currentIndex + 1 >= dueCards.length) {
+    if (!cards || currentIndex + 1 >= cards.length) {
       setIsDone(true);
     } else {
       setCurrentIndex((i) => i + 1);
@@ -254,12 +261,12 @@ const ReviewPage = () => {
       {/* Progress bar */}
       <div className="flex justify-between items-center mb-6 gap-4">
         <span className="text-sm text-gray-500 shrink-0">
-          {currentIndex + 1} / {dueCards.length}
+          {currentIndex + 1} / {cards.length}
         </span>
         <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
             className="h-2 bg-blue-500 rounded-full transition-all duration-300"
-            style={{ width: `${(currentIndex / dueCards.length) * 100}%` }}
+            style={{ width: `${(currentIndex / cards.length) * 100}%` }}
           />
         </div>
         <Link
