@@ -4,7 +4,11 @@
       "Bash(dotnet build server/src/AdvancedVocabApp.Api/)",
       "Bash(dotnet test server/src/AdvancedVocabApp.Tests/)",
       "Bash(dotnet build server/src/AdvancedVocabApp.Api/ --no-restore)",
-      "Bash(dotnet test server/src/AdvancedVocabApp.Tests/ --no-restore)"
+      "Bash(dotnet test server/src/AdvancedVocabApp.Tests/ --no-restore)",
+      "Bash(dotnet build \"C:\\\\Projects\\\\AdvancedVocabApp\\\\server\\\\src\\\\AdvancedVocabApp.Api\" --no-restore)",
+      "Bash(pnpm build:web)",
+      "Bash(pnpm typecheck)",
+      "Bash(dotnet test \"C:\\\\Projects\\\\AdvancedVocabApp\\\\server\\\\src\\\\AdvancedVocabApp.Tests\" --no-restore)"
     ]
   }
 }

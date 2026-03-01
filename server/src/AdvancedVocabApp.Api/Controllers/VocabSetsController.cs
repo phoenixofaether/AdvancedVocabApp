@@ -131,6 +131,25 @@ public class VocabSetsController(AppDbContext db) : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("{id:guid}/entries")]
+    public async Task<ActionResult<IReadOnlyList<VocabEntryResponse>>> GetEntries(Guid id, CancellationToken ct)
+    {
+        var userId = GetUserId();
+        var set = await db.VocabSets.FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId, ct);
+        if (set is null) return NotFound();
+
+        var entries = await db.VocabSetEntries
+            .Where(e => e.VocabSetId == id)
+            .OrderBy(e => e.SortOrder)
+            .Include(e => e.VocabEntry)
+                .ThenInclude(ve => ve.DictionaryData)
+                    .ThenInclude(d => d!.Meanings)
+            .Select(e => e.VocabEntry)
+            .ToListAsync(ct);
+
+        return Ok(entries.Select(MapEntryToResponse).ToList());
+    }
+
     [HttpDelete("{id:guid}/entries/{entryId:guid}")]
     public async Task<IActionResult> RemoveEntry(Guid id, Guid entryId, CancellationToken ct)
     {
@@ -147,6 +166,21 @@ public class VocabSetsController(AppDbContext db) : ControllerBase
         await db.SaveChangesAsync(ct);
         return NoContent();
     }
+
+    private static VocabEntryResponse MapEntryToResponse(VocabEntry entry) =>
+        new(entry.Id,
+            entry.Word,
+            entry.Language,
+            entry.CustomDefinition,
+            entry.CustomPhonetic,
+            entry.DictionaryData is null ? null : new DictionaryDataResponse(
+                entry.DictionaryData.PhoneticText ?? string.Empty,
+                entry.DictionaryData.AudioUrl,
+                entry.DictionaryData.Meanings
+                    .OrderBy(m => m.SortOrder)
+                    .Select(m => new DictionaryMeaningResponse(m.PartOfSpeech, m.Definition, m.Example))
+                    .ToList()),
+            entry.CreatedAt);
 
     private Guid GetUserId() =>
         Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value

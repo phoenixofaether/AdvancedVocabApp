@@ -15,3 +15,7 @@ public record UserProfileResponse(
     string DisplayName,
     string? VoicePreference,
     string PreferredLanguage);
+
+public record UpdateUserRequest(
+    string? VoicePreference = null,
+    string? PreferredLanguage = null);

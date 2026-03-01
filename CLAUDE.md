@@ -79,6 +79,8 @@ dotnet ef database update \
 
 **Routing pattern:** `_authenticated.tsx` layout route guards all child routes by checking `localStorage.accessToken`. Authenticated routes live under `apps/web/src/routes/_authenticated/`.
 
+**React component style:** All React components use **arrow function syntax** (`const MyComponent = () => { ... };`), NOT `function MyComponent() { ... }` declarations. This applies to page components, sub-components, and helper components alike.
+
 **Pending features (interfaces defined, not yet implemented):**
 - `IDictionaryService` — interface in Core, no implementation or DI registration yet
 - `ITextToSpeechService` — same
