@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { VocabEntry } from '@vocabapp/shared';
 import { apiClient } from './client';
+import { reviewKeys } from './review';
 
 export const entryKeys = {
   detail: (id: string) => ['vocab-entries', id] as const,
@@ -31,6 +32,8 @@ export function useCreateVocabEntry() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(entryKeys.detail(data.id), data);
+      queryClient.invalidateQueries({ queryKey: reviewKeys.due });
+      queryClient.invalidateQueries({ queryKey: reviewKeys.stats });
     },
   });
 }

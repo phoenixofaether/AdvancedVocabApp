@@ -49,11 +49,23 @@ public class VocabEntriesController(
         CancellationToken ct)
     {
         var userId = GetUserId();
+        var word = request.Word.Trim().ToLowerInvariant();
+
+        // Return existing entry if this user already has this word (prevents review duplicates)
+        var existing = await db.VocabEntries
+            .Include(e => e.DictionaryData)
+                .ThenInclude(d => d!.Meanings)
+            .FirstOrDefaultAsync(
+                e => e.Word == word && e.Language == request.Language && e.CreatedByUserId == userId,
+                ct);
+
+        if (existing is not null)
+            return Ok(MapToResponse(existing));
 
         var entry = new VocabEntry
         {
             Id = Guid.NewGuid(),
-            Word = request.Word.Trim().ToLowerInvariant(),
+            Word = word,
             Language = request.Language,
             CustomDefinition = request.CustomDefinition,
             CustomPhonetic = request.CustomPhonetic,

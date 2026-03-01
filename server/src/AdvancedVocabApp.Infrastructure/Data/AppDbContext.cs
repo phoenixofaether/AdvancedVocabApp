@@ -72,9 +72,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // VocabEntry
+        // VocabEntry - unique constraint per user; Word+Language capped at 450 chars (SQL Server index limit)
         builder.Entity<VocabEntry>(e =>
         {
+            e.Property(x => x.Word).HasMaxLength(450);
+            e.Property(x => x.Language).HasMaxLength(450);
+            e.HasIndex(x => new { x.Word, x.Language, x.CreatedByUserId }).IsUnique();
             e.HasOne(x => x.DictionaryData)
                 .WithMany(d => d.VocabEntries)
                 .HasForeignKey(x => x.DictionaryDataId)

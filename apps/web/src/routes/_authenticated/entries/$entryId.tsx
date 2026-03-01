@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { useVocabEntry, useUpdateVocabEntry } from "../../../api/vocabEntries";
 import { useCurrentUser } from "../../../api/auth";
@@ -7,6 +7,7 @@ import type { DictionaryMeaning } from "@vocabapp/shared";
 
 const WordCardPage = () => {
   const { entryId } = Route.useParams();
+  const router = useRouter();
   const { data: entry, isLoading } = useVocabEntry(entryId);
   const { data: user } = useCurrentUser();
   const updateEntry = useUpdateVocabEntry(entryId);
@@ -70,12 +71,12 @@ const WordCardPage = () => {
   return (
     <div className="max-w-2xl">
       {/* Back link */}
-      <Link
-        to="/sets"
+      <button
+        onClick={() => router.history.back()}
         className="text-sm text-blue-600 hover:underline mb-5 inline-block"
       >
-        ← My Sets
-      </Link>
+        ← Back
+      </button>
 
       {/* Word header */}
       <div className="mb-7">

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { VocabSet, VocabEntry } from '@vocabapp/shared';
 import { apiClient } from './client';
+import { reviewKeys } from './review';
 
 export const setKeys = {
   all: ['vocab-sets'] as const,
@@ -89,6 +90,8 @@ export function useAddEntriesToSet(setId: string) {
       queryClient.invalidateQueries({ queryKey: setKeys.entries(setId) });
       queryClient.invalidateQueries({ queryKey: setKeys.detail(setId) });
       queryClient.invalidateQueries({ queryKey: setKeys.all });
+      queryClient.invalidateQueries({ queryKey: reviewKeys.due });
+      queryClient.invalidateQueries({ queryKey: reviewKeys.stats });
     },
   });
 }
