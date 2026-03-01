@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(dotnet build server/src/AdvancedVocabApp.Api/)",
-      "Bash(dotnet test server/src/AdvancedVocabApp.Tests/)"
+      "Bash(dotnet test server/src/AdvancedVocabApp.Tests/)",
+      "Bash(dotnet build server/src/AdvancedVocabApp.Api/ --no-restore)",
+      "Bash(dotnet test server/src/AdvancedVocabApp.Tests/ --no-restore)"
     ]
   }
 }
