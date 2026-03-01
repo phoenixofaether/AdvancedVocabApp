@@ -33,14 +33,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             e.HasOne(x => x.VocabEntry)
                 .WithMany(v => v.SetEntries)
                 .HasForeignKey(x => x.VocabEntryId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);  // SQL Server: NO ACTION; EF Core handles cascade client-side
         });
 
         // DictionaryData - unique constraint on Word + Language
         builder.Entity<DictionaryData>(e =>
         {
             e.HasIndex(x => new { x.Word, x.Language }).IsUnique();
-            e.Property(x => x.RawJson).HasColumnType("json");
+            e.Property(x => x.RawJson).HasColumnType("nvarchar(max)");
         });
 
         // AudioCache - unique constraint on Word + Language + VoiceName
@@ -60,7 +60,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             e.HasOne(x => x.VocabEntry)
                 .WithMany(v => v.ReviewCards)
                 .HasForeignKey(x => x.VocabEntryId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);  // SQL Server: NO ACTION; EF Core handles cascade client-side
         });
 
         // VocabSet

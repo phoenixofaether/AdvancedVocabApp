@@ -10,10 +10,10 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database - MySQL via Pomelo
+// Database - SQL Server
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseSqlServer(connectionString));
 
 // ASP.NET Core Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>

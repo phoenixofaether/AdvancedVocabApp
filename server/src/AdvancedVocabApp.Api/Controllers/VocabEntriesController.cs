@@ -113,6 +113,8 @@ public class VocabEntriesController(
     {
         var userId = GetUserId();
         var entry = await db.VocabEntries
+            .Include(e => e.ReviewCards)
+            .Include(e => e.SetEntries)
             .FirstOrDefaultAsync(e => e.Id == id && e.CreatedByUserId == userId, ct);
 
         if (entry is null) return NotFound();
