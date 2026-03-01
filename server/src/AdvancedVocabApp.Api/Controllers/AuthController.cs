@@ -127,6 +127,27 @@ public class AuthController(
         return Ok(MapToProfile(user));
     }
 
+    [Authorize]
+    [HttpPut("/api/users/me")]
+    public async Task<ActionResult<UserProfileResponse>> UpdateMe(
+        [FromBody] UpdateUserRequest request,
+        CancellationToken ct)
+    {
+        var userId = GetUserId();
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        if (user is null) return NotFound();
+
+        if (request.VoicePreference is not null)
+            user.VoicePreference = request.VoicePreference;
+        if (request.PreferredLanguage is not null)
+            user.PreferredLanguage = request.PreferredLanguage;
+
+        user.UpdatedAt = DateTime.UtcNow;
+        await userManager.UpdateAsync(user);
+
+        return Ok(MapToProfile(user));
+    }
+
     private async Task<AuthResponse> IssueTokensAsync(
         ApplicationUser user,
         string? deviceInfo,

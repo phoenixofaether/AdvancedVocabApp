@@ -1,12 +1,12 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { GoogleLogin } from '@react-oauth/google';
-import { useGoogleLogin } from '../api/auth';
+import { GoogleLogin } from "@react-oauth/google";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useGoogleLogin } from "../api/auth";
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-function LoginPage() {
+const LoginPage = () => {
   const navigate = useNavigate();
   const googleLogin = useGoogleLogin();
 
@@ -29,13 +29,13 @@ function LoginPage() {
               if (credentialResponse.credential) {
                 googleLogin.mutate(credentialResponse.credential, {
                   onSuccess: () => {
-                    navigate({ to: '/dashboard' });
+                    navigate({ to: "/dashboard" });
                   },
                 });
               }
             }}
             onError={() => {
-              console.error('Google login failed');
+              console.error("Google login failed");
             }}
             useOneTap
           />
@@ -48,4 +48,4 @@ function LoginPage() {
       </div>
     </div>
   );
-}
+};

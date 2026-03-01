@@ -106,31 +106,39 @@ Goal: users can add words, see full cards, do spaced repetition sessions, and br
 
 ### Tasks
 
-- [ ] **2.1 — Dashboard** (`routes/_authenticated/dashboard.tsx`)
-  - Show `ReviewStats` widget: cards due today, today's reviewed count, streak
-  - Quick-add word input → `POST /api/vocab-entries` → auto-add to a default set
-  - Link to sets list and review session
+- [x] **2.1 — Dashboard** (`routes/_authenticated/dashboard.tsx`)
+  - ReviewStats widget: due today, reviewed today, streak — via `GET /api/review/stats`
+  - Quick-add word input → `POST /api/vocab-entries` → navigates to word card on success
+  - CTA links to sets list and review session
 
-- [ ] **2.2 — Vocab Sets pages**
-  - `routes/_authenticated/sets/index.tsx` — list all sets, create new set button
-  - `routes/_authenticated/sets/$setId.tsx` — set detail: list entries, add/remove words
+- [x] **2.2 — Vocab Sets pages**
+  - `routes/_authenticated/sets/index.tsx` — list all sets with word counts, inline create form
+  - `routes/_authenticated/sets/$setId.tsx` — set detail: entries with IPA + definition preview, add word (creates entry + adds to set), remove from set, edit/delete set, "Flashcard mode" link
+  - Backend: added `GET /api/vocab-sets/{id}/entries` returning `VocabEntryResponse[]`
 
-- [ ] **2.3 — Word card page** (`routes/_authenticated/entries/$entryId.tsx`)
-  - Show word, IPA phonetic, audio player (calls `/audio` endpoint with user's voice preference), part-of-speech chips, definition(s), example sentences
-  - "Edit custom definition / phonetic" inline form → `PUT /api/vocab-entries/{id}`
+- [x] **2.3 — Word card page** (`routes/_authenticated/entries/$entryId.tsx`)
+  - Word heading, IPA phonetic, audio button (fetches from `/audio` endpoint with voice preference, plays via Web Audio API)
+  - Part-of-speech chips, definitions, italicised example sentences
+  - Inline edit form for `customDefinition` and `customPhonetic` → `PUT /api/vocab-entries/{id}`
 
-- [ ] **2.4 — Spaced repetition review session** (`routes/_authenticated/review/index.tsx`)
-  - Fetch due cards, present one at a time: word shown → user flips → sees definition + audio → rates 1/3/4/5
-  - `POST /api/review/submit` on each rating, advance to next card
-  - Summary screen on session completion
+- [x] **2.4 — Spaced repetition review session** (`routes/_authenticated/review/index.tsx`)
+  - Progress bar showing `current / total` due cards
+  - Card front: word + language. "Show definition" button flips to back
+  - Card back: IPA, audio button, definition (lazy-fetches VocabEntry on flip), rating buttons (Again/Hard/Good/Easy)
+  - `POST /api/review/submit` on each rating; advances card or shows summary
+  - Summary screen: reviewed count, Good/Easy vs Again/Hard breakdown
 
-- [ ] **2.5 — Flashcard mode** (`routes/_authenticated/review/flashcard.tsx`)
-  - User picks a set, browses cards at own pace (no rating, no SM-2 scheduling)
-  - Forward / back navigation, flip animation
+- [x] **2.5 — Flashcard mode** (`routes/_authenticated/review/flashcard.tsx`)
+  - Set picker (populated via `GET /api/vocab-sets`); pre-filled via `?setId=` search param (from set detail page)
+  - Prev/Next navigation, card index counter
+  - Tap-to-flip: front shows word + IPA; back shows meanings, audio button
+  - No rating; purely for browsing
 
-- [ ] **2.6 — User settings** (`routes/_authenticated/settings.tsx`)
-  - Voice preference selector (populated from `GET /api/tts/voices`)
-  - `PUT /api/users/me` endpoint to save preference
+- [x] **2.6 — User settings** (`routes/_authenticated/settings.tsx`)
+  - Voice preference `<select>` populated from `GET /api/tts/voices` (new `TtsController`)
+  - Save → `PUT /api/users/me` (new endpoint in `AuthController`); invalidates user cache
+  - Account info block (name, email)
+  - Backend: new `TtsController.cs` + `PUT /api/users/me` in `AuthController` + `UpdateUserRequest` DTO
 
 ### Verification
 
