@@ -94,3 +94,20 @@ export interface ReviewStats {
 }
 
 export type ReviewQuality = 1 | 3 | 4 | 5;
+
+export interface WordListItem {
+  reviewCardId: string;
+  vocabEntryId: string;
+  word: string;
+  language: string;
+  phoneticText: string | null;
+  firstDefinition: string | null;
+  firstPartOfSpeech: string | null;
+  customDefinition: string | null;
+  easeFactor: number;
+  interval: number;
+  repetitions: number;
+  nextReviewDate: string;
+  lastReviewedAt: string | null;
+  createdAt: string;
+}

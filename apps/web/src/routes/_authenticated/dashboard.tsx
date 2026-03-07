@@ -94,7 +94,13 @@ const DashboardPage = () => {
       </div>
 
       {/* CTAs */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 flex-wrap">
+        <Link
+          to="/words"
+          className="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          My Words →
+        </Link>
         <Link
           to="/sets"
           className="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"

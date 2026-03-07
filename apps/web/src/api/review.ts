@@ -1,11 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ReviewCard, ReviewStats } from '@vocabapp/shared';
+import type { ReviewCard, ReviewStats, WordListItem } from '@vocabapp/shared';
 import { apiClient } from './client';
 
 export const reviewKeys = {
   due: ['review', 'due'] as const,
   stats: ['review', 'stats'] as const,
+  cards: ['review', 'cards'] as const,
 };
+
+export function useAllWords() {
+  return useQuery({
+    queryKey: reviewKeys.cards,
+    queryFn: async () => {
+      const { data } = await apiClient.get<WordListItem[]>('/review/cards');
+      return data;
+    },
+  });
+}
 
 export function useReviewDue() {
   return useQuery({

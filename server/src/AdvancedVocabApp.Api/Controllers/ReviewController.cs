@@ -14,6 +14,23 @@ namespace AdvancedVocabApp.Api.Controllers;
 [Authorize]
 public class ReviewController(AppDbContext db, ISpacedRepetitionService srs) : ControllerBase
 {
+    /// <summary>Returns all review cards for the current user with vocab entry details.</summary>
+    [HttpGet("cards")]
+    public async Task<ActionResult<IReadOnlyList<WordListItemResponse>>> GetAllCards(CancellationToken ct)
+    {
+        var userId = GetUserId();
+
+        var cards = await db.ReviewCards
+            .Include(c => c.VocabEntry)
+                .ThenInclude(e => e.DictionaryData)
+                    .ThenInclude(d => d!.Meanings)
+            .Where(c => c.UserId == userId)
+            .OrderByDescending(c => c.VocabEntry.CreatedAt)
+            .ToListAsync(ct);
+
+        return Ok(cards.Select(MapToWordListItem).ToList());
+    }
+
     /// <summary>Returns review cards due now for the current user, ordered by due date.</summary>
     [HttpGet("due")]
     public async Task<ActionResult<IReadOnlyList<ReviewCardResponse>>> GetDue(CancellationToken ct)
@@ -136,6 +153,29 @@ public class ReviewController(AppDbContext db, ISpacedRepetitionService srs) : C
             card.Repetitions,
             card.NextReviewDate,
             card.LastReviewedAt);
+
+    private static WordListItemResponse MapToWordListItem(ReviewCard card)
+    {
+        var firstMeaning = card.VocabEntry.DictionaryData?.Meanings
+            .OrderBy(m => m.SortOrder)
+            .FirstOrDefault();
+
+        return new WordListItemResponse(
+            card.Id,
+            card.VocabEntryId,
+            card.VocabEntry.Word,
+            card.VocabEntry.Language,
+            card.VocabEntry.DictionaryData?.PhoneticText,
+            firstMeaning?.Definition,
+            firstMeaning?.PartOfSpeech,
+            card.VocabEntry.CustomDefinition,
+            card.EaseFactor,
+            card.Interval,
+            card.Repetitions,
+            card.NextReviewDate,
+            card.LastReviewedAt,
+            card.VocabEntry.CreatedAt);
+    }
 
     private Guid GetUserId() =>
         Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
