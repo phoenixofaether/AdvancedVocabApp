@@ -24,7 +24,7 @@ importers:
         version: link:../../packages/shared
       axios:
         specifier: ^1.13.5
-        version: 1.13.5
+        version: 1.13.5(debug@4.4.3)
       react:
         specifier: ^19.2.0
         version: 19.2.4
@@ -80,6 +80,9 @@ importers:
       vite:
         specifier: ^7.3.1
         version: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)
+      vite-plugin-mkcert:
+        specifier: ^1.17.6
+        version: 1.17.10(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
 
   packages/shared:
     dependencies:
@@ -1590,6 +1593,12 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  vite-plugin-mkcert@1.17.10:
+    resolution: {integrity: sha512-703hecAoGZYgNrkY76OIbo0M9j0tfGIIM6n7c0sYvhaczQMPwD0nFi+bS44d8kwdbCtV7885FYBWnTzhsaC7QQ==}
+    engines: {node: '>=v16.7.0'}
+    peerDependencies:
+      vite: '>=3'
+
   vite@7.3.1:
     resolution: {integrity: sha512-w+N7Hifpc3gRjZ63vYBXA56dvvRlNWRczTdmCBBa+CotUzAPf5b7YMdMR/8CQoeYE5LX3W4wj6RYTgonm1b9DA==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -2365,9 +2374,9 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  axios@1.13.5:
+  axios@1.13.5(debug@4.4.3):
     dependencies:
-      follow-redirects: 1.15.11
+      follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -2651,7 +2660,9 @@ snapshots:
 
   flatted@3.3.3: {}
 
-  follow-redirects@1.15.11: {}
+  follow-redirects@1.15.11(debug@4.4.3):
+    optionalDependencies:
+      debug: 4.4.3
 
   form-data@4.0.5:
     dependencies:
@@ -3069,6 +3080,15 @@ snapshots:
   use-sync-external-store@1.6.0(react@19.2.4):
     dependencies:
       react: 19.2.4
+
+  vite-plugin-mkcert@1.17.10(vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)):
+    dependencies:
+      axios: 1.13.5(debug@4.4.3)
+      debug: 4.4.3
+      picocolors: 1.1.1
+      vite: 7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)
+    transitivePeerDependencies:
+      - supports-color
 
   vite@7.3.1(@types/node@24.10.13)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0):
     dependencies:
