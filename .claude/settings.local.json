@@ -8,7 +8,8 @@
       "Bash(dotnet publish *)",
       "Bash(pnpm build:web)",
       "Bash(pnpm typecheck)",
-      "Bash(dotnet ef migrations *)"
+      "Bash(dotnet ef migrations *)",
+      "WebFetch(domain:ai.google.dev)"
     ]
   }
 }

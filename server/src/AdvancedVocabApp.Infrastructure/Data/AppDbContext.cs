@@ -17,6 +17,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ReviewHistory> ReviewHistories => Set<ReviewHistory>();
     public DbSet<AudioCache> AudioCaches => Set<AudioCache>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<CambridgeExercise> CambridgeExercises => Set<CambridgeExercise>();
+    public DbSet<CambridgeExerciseAttempt> CambridgeExerciseAttempts => Set<CambridgeExerciseAttempt>();
+    public DbSet<CambridgeSkillProfile> CambridgeSkillProfiles => Set<CambridgeSkillProfile>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -113,6 +116,42 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             e.HasOne(x => x.DictionaryData)
                 .WithMany(d => d.Meanings)
                 .HasForeignKey(x => x.DictionaryDataId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // CambridgeExercise
+        builder.Entity<CambridgeExercise>(e =>
+        {
+            e.Property(x => x.ContentJson).HasColumnType("nvarchar(max)");
+            e.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // CambridgeExerciseAttempt
+        builder.Entity<CambridgeExerciseAttempt>(e =>
+        {
+            e.Property(x => x.AnswerJson).HasColumnType("nvarchar(max)");
+            e.Property(x => x.FeedbackJson).HasColumnType("nvarchar(max)");
+            e.HasIndex(x => new { x.UserId, x.ExerciseId });
+            e.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.Exercise)
+                .WithMany(ex => ex.Attempts)
+                .HasForeignKey(x => x.ExerciseId)
+                .OnDelete(DeleteBehavior.ClientCascade);  // avoid multiple cascade paths via User
+        });
+
+        // CambridgeSkillProfile
+        builder.Entity<CambridgeSkillProfile>(e =>
+        {
+            e.HasIndex(x => new { x.UserId, x.Level, x.ExerciseType }).IsUnique();
+            e.HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

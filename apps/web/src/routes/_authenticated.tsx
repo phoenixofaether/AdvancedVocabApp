@@ -25,6 +25,7 @@ const AuthenticatedLayout = () => {
             <NavLink to="/dashboard">Dashboard</NavLink>
             <NavLink to="/sets">My Sets</NavLink>
             <NavLink to="/review">Review</NavLink>
+            <NavLink to="/cambridge">Cambridge</NavLink>
             <NavLink to="/settings">Settings</NavLink>
           </nav>
         </div>

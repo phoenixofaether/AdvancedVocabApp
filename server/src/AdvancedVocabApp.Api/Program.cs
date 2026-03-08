@@ -73,6 +73,7 @@ builder.Services.AddScoped<ISpacedRepetitionService, SpacedRepetitionService>();
 // External API services
 builder.Services.AddHttpClient<IDictionaryService, FreeDictionaryService>();
 builder.Services.AddHttpClient<ITextToSpeechService, TextToSpeechService>();
+builder.Services.AddHttpClient<IExerciseGenerationService, ExerciseGenerationService>();
 
 // Controllers
 builder.Services.AddControllers();
